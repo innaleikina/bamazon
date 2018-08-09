@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var Table = require("easy-table");
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -23,10 +24,6 @@ connection.connect(function (err) {
 });
 
 
-var idArr = []
-var chosenItem;
-
-
 
 function start() {
     connection.query("SELECT * FROM products", function (err, results) {
@@ -36,11 +33,23 @@ function start() {
                     name: "whichId",
                     type: "input",
                     message: "Input an id for the item you want to buy",
+                    validate: function (value) {
+                        if (isNaN(value) === false) {
+                            return true;
+                        }
+                        return false;
+                    }
                 },
                 {
                     name: "howMany",
                     type: "input",
                     message: "Input how many of the item you would like to buy",
+                    validate: function (value) {
+                        if (isNaN(value) === false) {
+                            return true;
+                        }
+                        return false;
+                    }
 
                 }
             ]).then(function (answer) {
@@ -48,13 +57,12 @@ function start() {
                 var howMany = answer.howMany;
                 var quantity;
                 var price;
-                 console.log("You chose item with id " + whichId);
+                console.log("You chose item with id " + whichId);
                 for (var i = 0; i < results.length; i++) {
                     if (results[i].id == whichId) {
-                        chosenItem = results[i]
                         quantity = results[i].stock_quantity
                         price = parseFloat(results[i].price)
-                        //console.log(chosenItem);
+
                     }
                 }
 
@@ -64,41 +72,55 @@ function start() {
     });
 }
 
-function checkQuantity(requestQuantity, databaseQuantity, id, price){
-  if (requestQuantity <= databaseQuantity){
-      var newQuantity = databaseQuantity - requestQuantity;
-      newQuantity = parseFloat(newQuantity);
-    connection.query(
-        "UPDATE products SET ? WHERE ?",
-        [
-          {
-            stock_quantity: newQuantity 
-          },
-          {
-            id: id
-          }
-        ])
-        console.log("Your total is $" + requestQuantity * price );
-  } else {
-    console.log("Insufficient quantity!");
-  }
+function checkQuantity(requestQuantity, databaseQuantity, id, price) {
+    if (requestQuantity <= databaseQuantity) {
+        var newQuantity = databaseQuantity - requestQuantity;
+        newQuantity = parseFloat(newQuantity);
+        connection.query(
+            "UPDATE products SET ? WHERE ?", [{
+                    stock_quantity: newQuantity
+                },
+                {
+                    id: id
+                }
+            ])
+        displayItems();
+        console.log(" ");
+        console.log(" --- Your total is $" + requestQuantity * price);
+        console.log(" ");
+
+    } else {
+        console.log("Insufficient quantity!");
+    }
+
+    connection.end();
 }
 
 
 function displayItems() {
+    var data = []
+
     connection.query("SELECT * FROM products", function (err, results) {
         if (err) throw err;
         for (var i = 0; i < results.length; i++) {
-
-            idArr.push(results[i].id);
-            console.log("----------------------");
-            console.log("id : " + results[i].id);
-            console.log("product name : " + results[i].product_name);
-            console.log("department name : " + results[i].department_name);
-            console.log("price : " + results[i].price);
-            console.log("stock quantity : " + results[i].stock_quantity);
-            console.log("----------------------");
-            console.log(" ");
+            data.push({
+                id: results[i].id,
+                name: results[i].product_name,
+                price: results[i].price,
+                quantity: results[i].stock_quantity
+            })
         }
+        var t = new Table
+
+        data.forEach(function (product) {
+
+            t.cell('Product Id', product.id)
+            t.cell('Product Name', product.name)
+            t.cell('Price, USD', product.price, Table.number(2))
+            t.cell('Quantity', product.quantity)
+            t.newRow()
+        })
+
+        console.log(t.toString())
     })
 }
