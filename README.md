@@ -14,14 +14,14 @@ To use,  open any of the three files with node, and go through the prompts to ch
  ______________________
 
  # CUSTOMER
-![buy items](./images/customer.png){:height="50%" width="50%"}
+![buy items](./images/customer.png)
 
 # MANAGER
-![manager menu](./images/manager_menu.png){:height="50%" width="50%"}
-![low stock](./images/low_stock.png){:height="50%" width="50%"}
-![add inventory](./images/add_inventory.png){:height="50%" width="50%"}
-![add product](./images/add_product.png){:height="50%" width="50%"}
+![manager menu](./images/manager_menu.png)
+![low stock](./images/low_stock.png)
+![add inventory](./images/add_inventory.png)
+![add product](./images/add_product.png)
 
 # SUPERVISOR
-![add department](./images/add_department.png){:height="50%" width="50%"}
-![view sales](./images/view_department_sales.png){:height="50%" width="50%"}
+![add department](./images/add_department.png)
+![view sales](./images/view_department_sales.png)
