@@ -112,7 +112,7 @@ function displaySales() {
 
     connection.query("SELECT departments.department_id, departments.department_name, departments.overhead_costs, sum(products.product_sales) AS total_sales FROM products INNER JOIN departments ON departments.department_name = products.department_name GROUP BY departments.department_id", function (err, results) {
         if (err) throw err;
-        console.log(results);
+        // console.log(results);
         for (var i = 0; i < results.length; i++) {
 
             data.push({

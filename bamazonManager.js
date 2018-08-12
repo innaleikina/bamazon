@@ -165,7 +165,8 @@ function addNewItem() {
                         department_name: answer.newItemDepartment,
                         product_name: answer.itemName,
                         price: answer.price,
-                        stock_quantity: answer.quantity
+                        stock_quantity: answer.quantity,
+                        product_sales:0
                     },
                     function (err) {
                         if (err) throw err;
