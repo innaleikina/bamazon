@@ -27,3 +27,45 @@ VALUES ("Pen", "office supplies", 2.50, 100),
 SELECT * FROM products;
 SHOW COLUMNS FROM products;
                
+               
+CREATE TABLE departments (
+department_id INTEGER AUTO_INCREMENT NOT NULL,
+department_name VARCHAR (200),
+overhead_costs DECIMAL (10,2) NOT NULL,
+PRIMARY KEY (department_id)
+);
+
+ALTER TABLE products 
+ADD product_sales  DECIMAL (10,2) NOT NULL;
+
+
+INSERT INTO departments (department_name, overhead_costs)
+VALUES ("office supplies", 2000),
+               ( "books", 800),
+               ("kidds and baby", 1000),
+               ("technology and gadgets",  20),
+                 ( "memberships", 110),
+               ("cameras",10000)
+
+SELECT * FROM departments;
+SELECT * FROM products;
+
+
+SELECT 
+   departments.department_id,
+   departments.department_name,
+   departments.overhead_costs,
+   sum(products.product_sales) AS total_sales
+   
+
+ FROM
+   products
+	  INNER JOIN
+        departments ON departments.department_name = products.department_name
+        GROUP BY
+departments.department_id
+
+
+
+
+         

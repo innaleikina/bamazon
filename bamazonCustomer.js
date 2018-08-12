@@ -57,36 +57,42 @@ function start() {
                 var howMany = answer.howMany;
                 var quantity;
                 var price;
+                var dbTotal;
                 console.log("You chose item with id " + whichId);
                 for (var i = 0; i < results.length; i++) {
                     if (results[i].id == whichId) {
                         quantity = results[i].stock_quantity
                         price = parseFloat(results[i].price)
+                        dbTotal = parseFloat(results[i].product_sales)
 
                     }
                 }
 
-                checkQuantity(howMany, quantity, whichId, price);
+                checkQuantity(howMany, quantity, whichId, price, dbTotal );
             })
 
     });
 }
 
-function checkQuantity(requestQuantity, databaseQuantity, id, price) {
+function checkQuantity(requestQuantity, databaseQuantity, id, price, databaseTotal) {
     if (requestQuantity <= databaseQuantity) {
         var newQuantity = databaseQuantity - requestQuantity;
+       
         newQuantity = parseFloat(newQuantity);
+        var total = requestQuantity * price;
+        var newTotal = databaseTotal + total;
         connection.query(
             "UPDATE products SET ? WHERE ?", [{
-                    stock_quantity: newQuantity
+                    stock_quantity: newQuantity,
+                    product_sales: newTotal
                 },
                 {
                     id: id
-                }
+                },
             ])
         displayItems();
         console.log(" ");
-        console.log(" --- Your total is $" + requestQuantity * price);
+        console.log(" --- Your total is $" + total);
         console.log(" ");
 
     } else {
@@ -107,7 +113,8 @@ function displayItems() {
                 id: results[i].id,
                 name: results[i].product_name,
                 price: results[i].price,
-                quantity: results[i].stock_quantity
+                quantity: results[i].stock_quantity,
+                total: results[i].product_sales
             })
         }
         var t = new Table
@@ -118,6 +125,7 @@ function displayItems() {
             t.cell('Product Name', product.name)
             t.cell('Price, USD', product.price, Table.number(2))
             t.cell('Quantity', product.quantity)
+            t.cell("Total Sales", product.total)
             t.newRow()
         })
 

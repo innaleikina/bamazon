@@ -17,6 +17,8 @@ var connection = mysql.createConnection({
     database: "bamazon"
 });
 
+//________________________INITIAL PROMPT___________________
+
 inquirer.prompt([{
     name: "whichAction",
     type: "list",
@@ -36,12 +38,18 @@ inquirer.prompt([{
     //  connection.end();
 });
 
+
+//________________________VIEW ITEMS FUNCTION___________________
+
+
 function viewItems() {
     var data = [];
     connection.query("SELECT * FROM products", function (err, results) {
         if (err) throw err;
+        //get results from database
         for (var i = 0; i < results.length; i++) {
             data.push({
+                //save variables to data array so it can be displayed as a table
                 id: results[i].id,
                 name: results[i].product_name,
                 department: results[i].department_name,
@@ -50,6 +58,8 @@ function viewItems() {
 
             })
         }
+
+        //easy-table npm syntax to create a table from the results
         var t = new Table
 
         data.forEach(function (product) {
@@ -67,11 +77,14 @@ function viewItems() {
     connection.end();
 }
 
+
+//________________________VIEW LOW INVENTORY FUNCTION___________________
 function viewLowInventory() {
     var data = [];
     connection.query("SELECT * FROM products", function (err, results) {
         if (err) throw err;
         for (var i = 0; i < results.length; i++) {
+            //same as view items, but only if the stock quantity is lower than 5
             if (results[i].stock_quantity < 5) {
                 data.push({
                     id: results[i].id,
@@ -100,10 +113,15 @@ function viewLowInventory() {
     connection.end();
 }
 
-
+//________________________ADD ITEMS FUNCTION___________________
 function addNewItem() {
     console.log("adding inventory");
-    connection.query("SELECT * FROM products", function (err, results) {
+    var deptArr = [];
+    connection.query("SELECT * FROM departments", function (err, results) {
+
+        for (var i = 0; i < results.length;i++){
+            deptArr.push(results[i].department_name)
+        }
         if (err) throw err;
         inquirer
             .prompt([{
@@ -141,7 +159,7 @@ function addNewItem() {
                 }
             ])
             .then(function (answer) {
-                //console.log("item not added to the database yet");
+                //run MySql set to add the item's details to the database
                 connection.query(
                     "INSERT INTO products SET ?", {
                         department_name: answer.newItemDepartment,
@@ -160,8 +178,11 @@ function addNewItem() {
     })
 }
 
+
+//________________________ADD INVENTORY FUNCTION___________________
+
 function addInventory() {
-    console.log("adding items");
+
     inquirer
         .prompt([{
                 name: "id_name",
@@ -186,26 +207,26 @@ function addInventory() {
                 }
             },
         ]).then(function (answer) {
-
+            //loop through the results to access the item with the selected id
             var selectedId = "";
             var selectedItem = "an id that does not exist";
             var newQuantity = 0;
             connection.query("SELECT * FROM products", function (err, results) {
                 if (err) throw err;
                 for (var i = 0; i < results.length; i++) {
+                    //find the right id
                     if (parseFloat(answer.id_name) == parseFloat(results[i].id)) {
                         selectedId += results[i].id;
                         selectedItem = results[i].product_name;
                         // quantity = results[i].stock_quantity;
                     }
                 }
-                console.log("you selected " + selectedItem);
-                console.log("old quantity " + parseFloat(results[selectedId - 1].stock_quantity));
-                console.log("to add quantity " + parseFloat(answer.quantityAdd));
+
+                //get new quantity by addign the old stock quntity and the user input
                 newQuantity = parseFloat(results[selectedId - 1].stock_quantity) + parseFloat(answer.quantityAdd);
-                console.log(parseFloat(results[selectedId - 1].stock_quantity) + parseFloat(answer.quantityAdd));
 
                 console.log("id is " + selectedId);
+                //update the quantity of the selcted id
                 connection.query("UPDATE products SET ? WHERE ?", [{
                         stock_quantity: newQuantity
                     },
