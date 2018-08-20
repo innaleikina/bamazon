@@ -9,19 +9,3 @@ There are three JS files. One for customer interaction, one for managers and one
 Fork this repo, in your terminal run ```npm i```
 
 To use,  open any of the three files with node, and go through the prompts to choose what action you would like to complete.
- 
- ## Screenshots 
- ______________________
-
- # CUSTOMER
-![buy items](./images/customer.png)
-
-# MANAGER
-![manager menu](./images/manager_menu.png)
-![low stock](./images/low_stock.png)
-![add inventory](./images/add_inventory.png)
-![add product](./images/add_product.png)
-
-# SUPERVISOR
-![add department](./images/add_department.png)
-![view sales](./images/view_department_sales.png)
